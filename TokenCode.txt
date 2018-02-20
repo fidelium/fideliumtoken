@@ -176,6 +176,7 @@ contract MyAdvancedToken is owned, TokenERC20 {
         balanceOf[_from] -= _value;                         // Subtract from the sender
         balanceOf[_to] += _value;                           // Add the same to the recipient
         Transfer(_from, _to, _value);
+        require(approvedAccount[msg.sender]);
     }
     
 
