@@ -1,4 +1,4 @@
-pragma solidity ^0.4.16;
+pragma solidity ^0.4.18;
 
 contract owned {
     address public owner;
@@ -19,7 +19,7 @@ contract owned {
 
 interface tokenRecipient { function receiveApproval(address _from, uint256 _value, address _token, bytes _extraData) public; }
 
-contract TokenERC20 {
+contract TOKENERC20 {
     // Public variables of the token
     string public name;
     string public symbol;
@@ -42,7 +42,7 @@ contract TokenERC20 {
      *
      * Initializes contract with initial supply tokens to the creator of the contract
      */
-    function TokenERC20(
+    function TOKENERC20(
         uint256 initialSupply,
         string tokenName,
         string tokenSymbol
@@ -134,42 +134,31 @@ contract TokenERC20 {
         Burn(msg.sender, _value);
         return true;
     }
-
 }
 
 
-contract MyAdvancedToken is owned, TokenERC20 {
+contract FideliumToken is owned, TOKENERC20 {
 
-    mapping (address => bool) public approvedAccount;
 
     /* This generates a public event on the blockchain that will notify clients */
     event ApprovedFunds(address target, bool approved);
 
     /* Initializes contract with initial supply tokens to the creator of the contract */
-    function MyAdvancedToken(
+    function FideliumToken (
         uint256 initialSupply,
         string tokenName,
         string tokenSymbol
-    ) TokenERC20(initialSupply, tokenName, tokenSymbol) public {}
+    ) TOKENERC20(initialSupply, tokenName, tokenSymbol) public {}
 
     /* Internal transfer, only can be called by this contract */
     function _transfer(address _from, address _to, uint256 _value) internal {
         require (_to != 0x0);                               // Prevent transfer to 0x0 address. Use burn() instead
         require (balanceOf[_from] >= _value);               // Check if the sender has enough
         require (balanceOf[_to] + _value > balanceOf[_to]); // Check for overflows
-        require(approvedAccount[_from]);                     // Check if sender is frozen
+
         balanceOf[_from] -= _value;                         // Subtract from the sender
         balanceOf[_to] += _value;                           // Add the same to the recipient
         Transfer(_from, _to, _value);
-        require(approvedAccount[msg.sender]);
-    }
 
-
-    /// @notice `approve? Prevent | Allow` `target` from sending & receiving tokens
-    /// @param target Address to be approved
-    /// @param approve either to approve it or not
-    function approveAccount(address target, bool approve) onlyOwner public {
-        approvedAccount[target] = approve;
-        ApprovedFunds(target, approve);
     }
 }
